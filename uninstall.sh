@@ -1,8 +1,8 @@
 #!/bin/bash
 
-echo "Uninstalling One_bot_to_save_em_all..."
+echo "Uninstalling Personal-project..."
 
-python3 -m pip uninstall One_bot_to_save_em_all -y
+python3 -m pip uninstall Personal-project -y
 
 echo ""
 echo "Removing saved data..."

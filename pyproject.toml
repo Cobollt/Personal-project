@@ -3,7 +3,7 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "One_bot_to_save_em_all"
+name = "Personal-project"
 version = "1.0.0"
 description = "Console assistant bot"
 authors = [
@@ -18,7 +18,7 @@ dependencies = [
 ]
 
 [project.scripts]
-assistant-bot = "Data.main:main"
+assistant = "Data.main:main"
 
 [tool.setuptools.packages.find]
 include = ["Data"]

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "Installing One_bot_to_save_em_all..."
+echo "Installing Personal-project..."
 
 python3 -m pip install --upgrade pip
 python3 -m pip install . --force-reinstall
