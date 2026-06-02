@@ -6,7 +6,7 @@ try:
 except ImportError:
     Fore = None
 
-from models import Record
+from .models import Record
 
 
 GRAY = getattr(Fore, "LIGHT" + "BLACK_EX", "") if Fore else ""
