@@ -1,0 +1,23 @@
+# Project data
+SaveData/
+
+# Pickle files
+*.pkl
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+venv/
+.venv/
+env/
+
+# IDE
+.idea/
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db

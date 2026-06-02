@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "One_bot_to_save_em_all"
+version = "1.0.0"
+description = "Console assistant bot"
+authors = [
+    { name = "Rudem Yusupov" },
+    { name = "Viktor Paranych" },
+    { name = "Mykyta Ihnatenko" }
+]
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "colorama>=0.4.6",
+]
+
+[project.scripts]
+assistant-bot = "Data.main:main"
+
+[tool.setuptools.packages.find]
+include = ["Data"]
+exclude = ["SaveData"]
