@@ -2,8 +2,8 @@ import pickle
 from pathlib import Path
 from colorama import Fore, init
 
-from models import AddressBook, NoteBook
-from commands import CommandHandler, parse_input, suggest_command, is_error_message
+from .models import AddressBook, NoteBook
+from .commands import CommandHandler, parse_input, suggest_command, is_error_message
 
 
 init(autoreset=True)
