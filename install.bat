@@ -1,13 +1,11 @@
 @echo off
-echo Installing One_bot_to_save_em_all...
+echo Installing Personal-project...
 
 python -m pip install --upgrade pip
 python -m pip install . --force-reinstall
 
 echo.
 echo Installation completed.
-echo To start the bot, use:
-echo assistant-bot
-echo.
-
+echo Run the bot with:
+echo assistant
 pause

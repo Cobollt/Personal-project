@@ -1,7 +1,7 @@
 @echo off
-echo Uninstalling One_bot_to_save_em_all...
+echo Uninstalling Personal-project...
 
-pip uninstall One_bot_to_save_em_all -y
+python -m pip uninstall Personal-project -y
 
 echo.
 echo Removing saved data...
@@ -10,5 +10,4 @@ rmdir /s /q SaveData
 
 echo.
 echo Uninstall completed.
-
 pause

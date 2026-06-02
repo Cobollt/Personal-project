@@ -8,4 +8,4 @@ python3 -m pip install . --force-reinstall
 echo ""
 echo "Installation completed."
 echo "Run the bot with:"
-echo "assistant-bot"
+echo "assistant"
