@@ -148,9 +148,10 @@ class Record:
 
     def matches(self, query, field="all"):
         query = query.lower()
-        birthday = self.birthday.value if self.birthday else None
         birthday_formats = []
-        if birthday:
+
+        if self.birthday is not None:
+            birthday = self.birthday.value
             birthday_formats = [
                 birthday.strftime("%d.%m.%Y"),
                 birthday.strftime("%d.%m"),
@@ -158,6 +159,8 @@ class Record:
                 birthday.strftime("%Y"),
                 birthday.strftime("%m"),
                 birthday.strftime("%d"),
+                str(birthday.month),
+                str(birthday.day),
             ]
         search_actions = {
             "name": lambda: query in self.name.value.lower(),
