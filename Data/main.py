@@ -1,12 +1,19 @@
 import pickle
 from pathlib import Path
-from colorama import Fore, init
+
+try:
+    from colorama import Fore, init
+    init(autoreset=True)
+except ImportError:
+    class Fore:
+        RED = ""
+        GREEN = ""
+        BLUE = ""
 
 from .models import AddressBook, NoteBook
 from .commands import CommandHandler, parse_input, suggest_command, is_error_message
 
 
-init(autoreset=True)
 RED = Fore.RED
 GREEN = Fore.GREEN
 BLUE = Fore.BLUE
