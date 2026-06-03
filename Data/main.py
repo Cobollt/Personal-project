@@ -10,7 +10,7 @@ except ImportError:
         GREEN = ""
         BLUE = ""
 
-from .models import AddressBook, NoteBook
+from .storage import AddressBook, NoteBook
 from .commands import CommandHandler, parse_input, suggest_command, is_error_message
 
 
