@@ -1,8 +1,10 @@
+# Нахуй разнести весь блок по add, update, search, show, delete
+
 from datetime import datetime
 from typing import Callable, Optional
 
-from .storage import Address, Birthday, Email, Note, Phone, Record
-from .validation import normalize_query
+from Data.storage_data.storage import Address, Birthday, Email, Note, Phone, Record
+from Data.storage_data.validation import normalize_query
 
 
 class ModelLogic:

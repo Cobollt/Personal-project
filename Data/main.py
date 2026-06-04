@@ -10,8 +10,8 @@ except ImportError:
         GREEN = ""
         BLUE = ""
 
-from .storage import AddressBook, NoteBook
-from .commands import CommandHandler, parse_input, suggest_command, is_error_message
+from Data.storage_data.storage import AddressBook, NoteBook
+from Data.command.commands import CommandHandler, parse_input, suggest_command, is_error_message
 
 
 RED = Fore.RED
@@ -74,7 +74,9 @@ def main():
             save_notes(notebook)
             print(f"{BLUE}Good bye!")
             break
+
         result = handler.execute(command, args)
+
         if result is None:
             suggestion = suggest_command(user_input, handler.commands)
             print(f"Did you mean: {suggestion}?" if suggestion else f"{RED}Invalid command.")

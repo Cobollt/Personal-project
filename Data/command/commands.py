@@ -6,9 +6,9 @@ try:
 except ImportError:
     Fore = None
 
-from .model_logic import ModelLogic
-from .storage import Note, Record
-from .validation import split_text_and_tags
+from .command_logic.model_logic import ModelLogic
+from Data.storage_data.storage import Note, Record
+from Data.storage_data.validation import split_text_and_tags
 
 
 GRAY = getattr(Fore, "LIGHT" + "BLACK_EX", "") if Fore else ""
@@ -184,13 +184,13 @@ class CommandHandler:
         if len(args) < 2:
             return "Usage: add [name] [phone] [birthday] [email] [address]"
         name, phone, *optional = args
-        record = self.book.data.get(name)
+        record = self.logic.book.data.get(name)
         message = "Contact updated."
         if record is None:
             record = Record(name)
-            self.add_record(record)
+            self.logic.add_record(record)
             message = "Contact added."
-        self.add_phone(record, phone)
+        self.logic.add_phone(record, phone)
         birthday = optional[0] if len(optional) > 0 else ask_optional("Birthday DD.MM.YYYY, Enter to skip: ")
         email = optional[1] if len(optional) > 1 else ask_optional("Email, Enter to skip: ")
         address = " ".join(optional[2:]) if len(optional) > 2 else ask_optional("Address, Enter to skip: ")
@@ -201,7 +201,7 @@ class CommandHandler:
         }
         for field_name, input_value in optional_values.items():
             if input_value:
-                self.set_contact_field(record, field_name, input_value)
+                self.logic.set_contact_field(record, field_name, input_value)
         return message
 
     def add_note_router(self, args: list[str]) -> str:
@@ -218,16 +218,16 @@ class CommandHandler:
             return "Usage: add note [title] [text] #tag"
         title, *parts = args
         text, tags = split_text_and_tags(parts)
-        self.add_notebook_note(title, text, tags)
+        self.logic.add_notebook_note(title, text, tags)
         return "Note added."
 
     def add_contact_note(self, args: list[str]) -> str:
         if len(args) < 2:
             return "Usage: add note contact [name] [title] [text] #tag"
         name, title, *parts = args
-        record = self.get_contact(name)
+        record = self.logic.get_contact(name)
         text, tags = split_text_and_tags(parts)
-        self.add_record_note(record, title, text, tags)
+        self.logic.add_record_note(record, title, text, tags)
         return "Contact note added."
 
     # ── UPDATE ──────────────────────────────────────────────────────────────
@@ -246,7 +246,7 @@ class CommandHandler:
         if len(args) < 2:
             return "Usage: update phone [name] [phone] or update phone [name] [old_phone] [new_phone]"
         name, *phones = args
-        record = self.get_contact(name)
+        record = self.logic.get_contact(name)
         phone_actions: dict[int, Callable[[], str]] = {
             1: lambda: self.add_phone_to_contact(record, phones[0]),
             2: lambda: self.replace_contact_phone(record, phones[0], phones[1]),
@@ -257,20 +257,20 @@ class CommandHandler:
         return action()
 
     def add_phone_to_contact(self, record: Record, phone: str) -> str:
-        self.add_phone(record, phone)
+        self.logic.add_phone(record, phone)
         return "Phone added."
 
     def replace_contact_phone(self, record: Record, old_phone: str, new_phone: str) -> str:
-        self.replace_phone(record, old_phone, new_phone)
+        self.logic.replace_phone(record, old_phone, new_phone)
         return "Phone updated."
 
     def update_contact_field(self, args: list[str], field: str) -> str:
         if len(args) < 2:
             return f"Usage: update {field} [name] [value]"
         name, *value_parts = args
-        record = self.get_contact(name)
+        record = self.logic.get_contact(name)
         input_value = " ".join(value_parts)
-        self.set_contact_field(record, field, input_value)
+        self.logic.set_contact_field(record, field, input_value)
         return f"{field.capitalize()} updated."
 
     def update_note_router(self, args: list[str]) -> str:
@@ -287,16 +287,16 @@ class CommandHandler:
             return "Usage: update note [title] [new text] #tag"
         title, *parts = args
         text, tags = split_text_and_tags(parts)
-        self.edit_notebook_note(title, text, tags)
+        self.logic.edit_notebook_note(title, text, tags)
         return "Note updated."
 
     def update_contact_note(self, args: list[str]) -> str:
         if len(args) < 2:
             return "Usage: update note contact [name] [title] [new text] #tag"
         name, title, *parts = args
-        record = self.get_contact(name)
+        record = self.logic.get_contact(name)
         text, tags = split_text_and_tags(parts)
-        self.edit_record_note(record, title, text, tags)
+        self.logic.edit_record_note(record, title, text, tags)
         return "Contact note updated."
 
     # ── SEARCH ──────────────────────────────────────────────────────────────
@@ -316,7 +316,7 @@ class CommandHandler:
         field = args[0] if args and args[0] in allowed_fields else "all"
         query_parts = args[1:] if field != "all" or (args and args[0] == "all") else args
         query = " ".join(query_parts)
-        return format_contacts(self.find_contacts(query, field))
+        return format_contacts(self.logic.find_contacts(query, field))
 
     def search_note_router(self, args: list[str]) -> str:
         note_type = args[0] if args and args[0] == "contact" else "general"
@@ -332,7 +332,7 @@ class CommandHandler:
         field = args[0] if args and args[0] in allowed_fields else "all"
         query_parts = args[1:] if field != "all" or (args and args[0] == "all") else args
         query = " ".join(query_parts)
-        return format_notes(self.find_notebook_notes(query, field))
+        return format_notes(self.logic.find_notebook_notes(query, field))
 
     def search_contact_notes(self, args: list[str]) -> str:
         allowed_fields = {"name", "title", "text", "tag", "all"}
@@ -340,9 +340,9 @@ class CommandHandler:
         query_parts = args[1:] if field != "all" or (args and args[0] == "all") else args
         query = " ".join(query_parts)
         results = []
-        for record in self.book.data.values():
+        for record in self.logic.book.data.values():
             for note in record.notes:
-                if self.note_matches(note, query, field):
+                if self.logic.note_matches(note, query, field):
                     results.append(f"{record.name.value} -> {note}")
         return "\n".join(results) if results else "No contact notes found."
 
@@ -358,19 +358,19 @@ class CommandHandler:
         return action(args[1:])
 
     def show_all_contacts(self, _args: Optional[list[str]] = None) -> str:
-        if not self.book.data:
+        if not self.logic.book.data:
             return "Address book is empty."
-        return "\n".join(str(record) for record in self.book.data.values())
+        return "\n".join(str(record) for record in self.logic.book.data.values())
 
     def show_all_notes(self, _args: Optional[list[str]] = None) -> str:
-        notes = list(self.notebook.data.values())
+        notes = list(self.logic.notebook.data.values())
         if not notes:
             return "Notebook is empty."
         return "\n".join(str(note) for note in notes)
 
     def show_birthdays(self, args: list[str]) -> str:
         days = int(args[0]) if args else 7
-        records = self.upcoming_birthdays(days)
+        records = self.logic.upcoming_birthdays(days)
         return format_contacts(records) if records else f"No birthdays in the next {days} day(s)."
 
     # ── DELETE ──────────────────────────────────────────────────────────────
@@ -389,19 +389,19 @@ class CommandHandler:
         if not args:
             return "Usage: delete contact [name]"
         name = args[0]
-        self.delete_record(name)
+        self.logic.delete_record(name)
         return f"Contact {name} deleted."
 
     def delete_contact_data(self, args: list[str], target: str) -> str:
         if not args:
             return f"Usage: delete {target} [name]"
         name = args[0]
-        record = self.get_contact(name)
+        record = self.logic.get_contact(name)
         delete_actions: dict[str, Callable[[], None]] = {
-            "phone": lambda: self.delete_phone(record, args[1]) if len(args) > 1 else raise_value("Usage: delete phone [name] [phone]"),
-            "birthday": lambda: self.delete_contact_field(record, "birthday"),
-            "email": lambda: self.delete_contact_field(record, "email"),
-            "address": lambda: self.delete_contact_field(record, "address"),
+            "phone": lambda: self.logic.delete_phone(record, args[1]) if len(args) > 1 else raise_value("Usage: delete phone [name] [phone]"),
+            "birthday": lambda: self.logic.delete_contact_field(record, "birthday"),
+            "email": lambda: self.logic.delete_contact_field(record, "email"),
+            "address": lambda: self.logic.delete_contact_field(record, "address"),
         }
         delete_actions[target]()
         return f"{target.capitalize()} deleted."
@@ -419,13 +419,13 @@ class CommandHandler:
         if not args:
             return "Usage: delete note [title]"
         title = args[0]
-        self.delete_notebook_note(title)
+        self.logic.delete_notebook_note(title)
         return "Note deleted."
 
     def delete_contact_note(self, args: list[str]) -> str:
         if len(args) < 2:
             return "Usage: delete note contact [name] [title]"
         name, title = args
-        record = self.get_contact(name)
-        self.delete_record_note(record, title)
+        record = self.logic.get_contact(name)
+        self.logic.delete_record_note(record, title)
         return "Contact note deleted."
