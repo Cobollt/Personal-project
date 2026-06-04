@@ -6,6 +6,10 @@ from .validation import normalize_query
 
 
 class ModelLogic:
+    def __init__(self, book, notebook):
+        self.book = book
+        self.notebook = notebook
+
     FIELD_CLASSES: dict[str, Callable[[str], object]] = {
         "birthday": Birthday,
         "email": Email,

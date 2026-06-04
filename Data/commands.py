@@ -121,9 +121,9 @@ def format_notes(notes: list[Note] | list[str]) -> str:
     return "\n".join(str(note) for note in notes) if notes else "No notes found."
 
 
-class CommandHandler(ModelLogic):
+class CommandHandler:
     def __init__(self, book, notebook):
-        super().__init__(book, notebook)
+        self.logic = ModelLogic(book, notebook)
 
         self.commands: dict[str, Callable[[list[str]], str]] = {
             "help": self.help,
@@ -183,32 +183,25 @@ class CommandHandler(ModelLogic):
     def add_contact(self, args: list[str]) -> str:
         if len(args) < 2:
             return "Usage: add [name] [phone] [birthday] [email] [address]"
-
         name, phone, *optional = args
         record = self.book.data.get(name)
         message = "Contact updated."
-
         if record is None:
             record = Record(name)
             self.add_record(record)
             message = "Contact added."
-
         self.add_phone(record, phone)
-
         birthday = optional[0] if len(optional) > 0 else ask_optional("Birthday DD.MM.YYYY, Enter to skip: ")
         email = optional[1] if len(optional) > 1 else ask_optional("Email, Enter to skip: ")
         address = " ".join(optional[2:]) if len(optional) > 2 else ask_optional("Address, Enter to skip: ")
-
         optional_values = {
             "birthday": birthday,
             "email": email,
             "address": address,
         }
-
         for field_name, input_value in optional_values.items():
             if input_value:
                 self.set_contact_field(record, field_name, input_value)
-
         return message
 
     def add_note_router(self, args: list[str]) -> str:

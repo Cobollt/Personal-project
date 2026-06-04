@@ -74,7 +74,6 @@ def main():
             save_notes(notebook)
             print(f"{BLUE}Good bye!")
             break
-
         result = handler.execute(command, args)
         if result is None:
             suggestion = suggest_command(user_input, handler.commands)
