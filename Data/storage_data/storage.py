@@ -36,8 +36,14 @@ class Address(Field):
 
 
 class Note:
-    def __init__(self, title: str, text: str = "", tags: Optional[list[str]] = None, name: Optional[str] = None):
-        self.name = name
+    def __init__(
+        self,
+        title: str,
+        text: str = "",
+        tags: Optional[list[str]] = None,
+        contact: Optional[str] = None,
+    ):
+        self.contact = contact
         self.title = title
         self.text = text
         self.tags = tags if tags else []
@@ -46,7 +52,7 @@ class Note:
         tags = ", ".join(self.tags) if self.tags else "not added"
         return (
             "Notebook:\n"
-            f"  name: {self.name if self.name else 'not added'}\n"
+            f"  contact: {self.contact if self.contact else 'not added'}\n"
             f"  title: {self.title}\n"
             f"  text: {self.text if self.text else 'not added'}\n"
             f"  tag: {tags}"
@@ -60,7 +66,6 @@ class Record:
         self.birthday: Optional[Birthday] = None
         self.email: Optional[Email] = None
         self.address: Optional[Address] = None
-        self.notes: list[Note] = []
 
     def __str__(self) -> str:
         birthday = self.birthday.value.strftime("%d.%m.%Y") if self.birthday else "not added"

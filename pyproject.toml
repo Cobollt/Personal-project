@@ -6,22 +6,13 @@ build-backend = "setuptools.build_meta"
 name = "Personal-project"
 version = "1.0.0"
 description = "Console assistant bot"
-authors = [
-    { name = "Rudem Yusupov" },
-    { name = "Viktor Paranych" },
-    { name = "Mykyta Ihnatenko" }
-]
 readme = "README.md"
 requires-python = ">=3.10"
-dependencies = [
-    "colorama>=0.4.6",
-    "storage>=0.0.4.3",
-    "validation>=0.8.3",
-]
+dependencies = ["colorama>=0.4.6"]
 
 [project.scripts]
 assistant = "Data.main:main"
 
 [tool.setuptools.packages.find]
-include = ["Data"]
+include = ["Data*"]
 exclude = ["SaveData"]

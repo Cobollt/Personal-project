@@ -10,9 +10,9 @@ except ImportError:
         GREEN = ""
         BLUE = ""
 
-from Data.storage_data.storage import AddressBook, NoteBook
-from Data.command.commands import CommandHandler, parse_input, suggest_command, is_error_message
-
+from .command.commands import CommandHandler
+from .storage_data.storage import AddressBook, NoteBook
+from .storage_data.validation import is_error_message, run_user_command
 
 RED = Fore.RED
 GREEN = Fore.GREEN
@@ -24,30 +24,25 @@ DATA_FILE = DATA_DIR / "addressbook.pkl"
 NOTES_FILE = DATA_DIR / "notebook.pkl"
 
 
-def save_data(book, filename=DATA_FILE):
+def save_data(book: AddressBook, filename=DATA_FILE) -> None:
     with open(filename, "wb") as file:
         pickle.dump(book, file)
 
 
-def save_notes(notes, filename=NOTES_FILE):
+def save_notes(notes: NoteBook, filename=NOTES_FILE) -> None:
     with open(filename, "wb") as file:
         pickle.dump(notes, file)
 
 
-def load_data(filename=DATA_FILE):
+def load_data(filename=DATA_FILE) -> AddressBook:
     try:
         with open(filename, "rb") as file:
-            book = pickle.load(file)
-        for record in book.data.values():
-            record.email = getattr(record, "email", None)
-            record.address = getattr(record, "address", None)
-            record.notes = getattr(record, "notes", [])
-        return book
+            return pickle.load(file)
     except FileNotFoundError:
         return AddressBook()
 
 
-def load_notes(filename=NOTES_FILE):
+def load_notes(filename=NOTES_FILE) -> NoteBook:
     try:
         with open(filename, "rb") as file:
             return pickle.load(file)
@@ -55,19 +50,16 @@ def load_notes(filename=NOTES_FILE):
         return NoteBook()
 
 
-def main():
+def main() -> None:
     book = load_data()
     notebook = load_notes()
     handler = CommandHandler(book, notebook)
 
     print(f"\n{BLUE}Welcome to the assistant bot!")
+
     while True:
         user_input = input("Enter a command: ")
-        if not user_input.strip():
-            print(f"{RED}Please enter a command.")
-            continue
-
-        command, args = parse_input(user_input)
+        command = user_input.split()[0].lower() if user_input.split() else ""
 
         if command in ("close", "exit"):
             save_data(book)
@@ -75,11 +67,8 @@ def main():
             print(f"{BLUE}Good bye!")
             break
 
-        result = handler.execute(command, args)
-
+        result = run_user_command(user_input, handler.commands)
         if result is None:
-            suggestion = suggest_command(user_input, handler.commands)
-            print(f"Did you mean: {suggestion}?" if suggestion else f"{RED}Invalid command.")
             continue
 
         if command == "help":
